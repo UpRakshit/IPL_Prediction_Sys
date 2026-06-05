@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CricketAI Match Centre</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="/">
+          <span class="brand-mark">CA</span>
+          <span>
+            <strong>CricketAI</strong>
+            <small>Match Centre</small>
+          </span>
+        </a>
+        <nav class="top-nav" aria-label="Primary">
+          <button class="nav-action" data-tab-target="commentary" type="button">Live</button>
+          <button class="nav-action" data-tab-target="scorecard" type="button">Scorecard</button>
+          <button class="nav-action" data-tab-target="squads" type="button">Squads</button>
+          <button class="nav-action" data-tab-target="model" type="button">Predictor</button>
+        </nav>
+        <div class="refresh-state">
+          <span class="pulse"></span>
+          <span id="last-updated">Syncing</span>
+          <button id="refresh-button" class="icon-button" type="button" title="Refresh match data">Refresh</button>
+        </div>
+      </header>
+
+      <main class="layout">
+        <aside class="match-rail" aria-label="Matches">
+          <div class="rail-head">
+            <h1>Matches</h1>
+            <span id="match-count">0</span>
+          </div>
+          <div id="match-list" class="match-list"></div>
+        </aside>
+
+        <section class="match-main" id="live">
+          <section class="score-hero">
+            <div class="series-row">
+              <span id="series-name">Indian Premier League</span>
+              <span id="match-status" class="status-chip">Live</span>
+            </div>
+            <div class="score-grid">
+              <div class="team-score">
+                <div class="team-badge" id="team-a-badge">--</div>
+                <div>
+                  <h2 id="team-a-name">Loading</h2>
+                  <strong id="team-a-score">-</strong>
+                  <small id="team-a-overs">-</small>
+                </div>
+              </div>
+              <div class="team-score away">
+                <div class="team-badge" id="team-b-badge">--</div>
+                <div>
+                  <h2 id="team-b-name">Loading</h2>
+                  <strong id="team-b-score">-</strong>
+                  <small id="team-b-overs">-</small>
+                </div>
+              </div>
+              <div class="chase-strip">
+                <span id="status-line">Loading match state</span>
+                <div class="mini-metrics">
+                  <span><b id="current-rr">188</b><small id="metric-a-label">par score</small></span>
+                  <span><b id="required-rr">53%</b><small id="metric-b-label">GT win</small></span>
+                  <span><b id="balls-left">68%</b><small id="metric-c-label">confidence</small></span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <div class="tabbar" role="tablist" aria-label="Match sections">
+            <button class="tab active" data-tab="commentary" type="button">Commentary</button>
+            <button class="tab" data-tab="scorecard" type="button">Scorecard</button>
+            <button class="tab" data-tab="squads" type="button">Squads</button>
+            <button class="tab" data-tab="info" type="button">Info</button>
+            <button class="tab" data-tab="pitch" type="button">Pitch</button>
+            <button class="tab" data-tab="model" type="button">Model</button>
+          </div>
+
+          <section class="content-panel active" id="tab-commentary">
+            <div class="section-head">
+              <h2>Ball By Ball</h2>
+              <span id="last-event">Awaiting feed</span>
+            </div>
+            <div id="commentary-feed" class="commentary-feed"></div>
+          </section>
+
+          <section class="content-panel" id="tab-scorecard">
+            <div class="section-head">
+              <h2>Scorecard</h2>
+              <span id="partnership">Partnership</span>
+            </div>
+            <div id="scorecard" class="scorecard-stack"></div>
+          </section>
+
+          <section class="content-panel" id="tab-squads">
+            <div class="section-head">
+              <h2>Squads</h2>
+              <span>Playing XI</span>
+            </div>
+            <div id="squads" class="squad-grid"></div>
+          </section>
+
+          <section class="content-panel" id="tab-info">
+            <div class="section-head">
+              <h2>Match Info</h2>
+              <span id="match-number">Match</span>
+            </div>
+            <dl class="info-list">
+              <div>
+                <dt>Venue</dt>
+                <dd id="venue">-</dd>
+              </div>
+              <div>
+                <dt>Toss</dt>
+                <dd id="toss">-</dd>
+              </div>
+              <div>
+                <dt>Start</dt>
+                <dd id="start-time">-</dd>
+              </div>
+            </dl>
+          </section>
+
+          <section class="content-panel" id="tab-pitch">
+            <div class="section-head">
+              <h2>Pitch & Conditions</h2>
+              <span id="pitch-par">Par score</span>
+            </div>
+            <div id="pitch-report" class="pitch-grid"></div>
+          </section>
+
+          <section class="content-panel" id="tab-model">
+            <div class="section-head">
+              <h2>Prediction Model</h2>
+              <span id="data-mode">Model data</span>
+            </div>
+            <div class="model-layout">
+              <div>
+                <h3>Feature Impact</h3>
+                <div id="feature-importance" class="feature-list"></div>
+              </div>
+              <div>
+                <h3>Key Matchups</h3>
+                <div id="matchups" class="matchup-list"></div>
+              </div>
+            </div>
+            <div class="section-head model-subhead">
+              <h3>Player Form Inputs</h3>
+              <span id="source-note">-</span>
+            </div>
+            <div id="player-form" class="form-table-wrap"></div>
+          </section>
+        </section>
+
+        <aside class="prediction-panel">
+          <section class="forecast">
+            <div class="section-head">
+              <h2>Next Over</h2>
+              <span id="next-over">16th over</span>
+            </div>
+            <div class="forecast-lead">
+              <span>Expected runs</span>
+              <strong id="expected-runs">9.2</strong>
+              <small id="run-range">Range 6-13</small>
+            </div>
+            <div class="prob-grid">
+              <div>
+                <span>Wicket risk</span>
+                <b id="wicket-risk">18%</b>
+                <div class="bar"><i id="wicket-bar"></i></div>
+              </div>
+              <div>
+                <span>Boundary chance</span>
+                <b id="boundary-chance">42%</b>
+                <div class="bar"><i id="boundary-bar"></i></div>
+              </div>
+              <div>
+                <span>Dot ball chance</span>
+                <b id="dot-chance">31%</b>
+                <div class="bar"><i id="dot-bar"></i></div>
+              </div>
+              <div>
+                <span>Win probability</span>
+                <b id="win-probability">57%</b>
+                <div class="bar"><i id="win-bar"></i></div>
+              </div>
+            </div>
+            <div class="strategy">
+              <img src="/static/assets/pitch-map.svg" alt="" />
+              <p id="strategy-text">Loading forecast</p>
+            </div>
+            <ul id="forecast-factors" class="factor-list"></ul>
+          </section>
+
+          <section class="players-now over-plan">
+            <div class="section-head">
+              <h2>20 Over Forecast</h2>
+              <span>updates live</span>
+            </div>
+            <div id="over-projections" class="over-projections"></div>
+          </section>
+
+          <section class="players-now">
+            <div class="section-head">
+              <h2>Current Context</h2>
+              <span id="momentum">Momentum</span>
+            </div>
+            <div class="player-row">
+              <span>Primary batter</span>
+              <strong id="striker">-</strong>
+            </div>
+            <div class="player-row">
+              <span>Support batter</span>
+              <strong id="non-striker">-</strong>
+            </div>
+            <div class="player-row">
+              <span>Likely bowler</span>
+              <strong id="bowler">-</strong>
+            </div>
+          </section>
+        </aside>
+      </main>
+    </div>
+
+    <script src="/static/app.js" defer></script>
+  </body>
+</html>

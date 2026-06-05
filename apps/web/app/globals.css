@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  background: #edf2ef;
+  color: #15201d;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Simulation live-pulse animation */
+@keyframes sim-pulse {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  50% {
+    opacity: 0.75;
+    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+  }
+}
+
+.sim-pulse-dot {
+  animation: sim-pulse 1.4s ease-in-out infinite;
+}
+
+/* Smooth panel transitions */
+.shadow-panel {
+  transition: box-shadow 0.2s ease;
+}
